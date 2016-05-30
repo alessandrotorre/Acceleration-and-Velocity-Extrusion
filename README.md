@@ -29,13 +29,13 @@ add
 
 11. In the machine settings of CURA, chose Gcode flavor Mach3/linuxCNC 
 
-Hints
+Hints:
 In VE_cura_postprocessor.py I used an infill volume of 1.9 instead of 1, because the slicer makes the lines pattern in a crossed way of 90° between layers and it generates infill without floor. If you want you can change that parameter at line 56 of VE_cura_linuxcnc.py
 
-Mcodes leggends 
+Mcodes: 
 It is easier for me remember the command that ends with "1" like 111, 131 or 151 as "ON" status and the ones that ends with "0" like 110,130 or 150 as "off" status.
 
-
+Mcodes leggends: 
 - M110 switch to normal mode, not Velocity Extrusion
 - M111 switch to Velocity Extrusion mode
 - M120 Pxx.xx: sets the layer height
