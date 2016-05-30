@@ -3,7 +3,13 @@
 # M131: Extrusion Velocity Control Precharge ON
 # Example: M131
 
+isenabled=$(halcmd getp AccVelExtr.0.isenabled)
+
+if [ "$isenabled" = "TRUE" ];then
 halcmd setp VelocityExtrusion.0.status 5
-exit 0
+else
+echo "$isenabled Componente velocity extruder disabilitato. Abilitarlo con M111"
+#eog /home/linuxcnc/linuxcnc/message/M130.png &
+fi
 
 
