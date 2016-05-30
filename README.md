@@ -28,6 +28,7 @@ add
 10. add the postprocessor for CURA in the cura plugin folder.
 
 11. In the machine settings of CURA, chose Gcode flavor Mach3/linuxCNC 
+12. Assign a very high value to the FERROR and MIN_FERROR in the [AXIS_4] section in yours .ini file
 
 Hints:
 In VE_cura_postprocessor.py I used an infill volume of 1.9 instead of 1, because the slicer makes the lines pattern in a crossed way of 90° between layers and it generates infill without floor. If you want you can change that parameter at line 56 of VE_cura_linuxcnc.py
