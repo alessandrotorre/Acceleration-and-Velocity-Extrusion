@@ -94,7 +94,8 @@ switch(status)
 	islinked=1;			//TO GUI LED
 	isretracted=0 ;			//TO GUI LED
 	isprecharged=0;			//TO GUI LED
-	isenabled=0;			//TO GUI LED	
+	isenabled=0;			//TO GUI LED
+	Apos_fixed=Apos;
 	break;
 
   case (1):   // 1 enable
@@ -102,6 +103,7 @@ switch(status)
 	isretracted=0 ;			//TO GUI LED
 	isprecharged=0;			//TO GUI LED
 	isenabled=1;			//TO GUI LED
+	Apos_fixed=Apos;
 	break;
 
   case (2):   // 2 not linked
