@@ -1,10 +1,7 @@
 #!/bin/sh
-# M150: Extrusion Velocity Control Mode off
+# M150: Extrusion Velocity Control Unlink the Nozzle from XY movements
 # Example: M150
-# Turn off the extrusioin velocity control
 
-#halcmd setp hal_pru_generic.pwmgen.00.out.01.value $1
-#Connette il nozzle alla posizione comandata della A
 halcmd setp VelocityExtrusion.0.status 2
 exit 0
 
