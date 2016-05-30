@@ -23,7 +23,9 @@ sudo halcompile --install orLastVariation.comp
 add
 
 >EMBED_TAB_NAME=Acceleration and Velocity of Extrusion
+
 >EMBED_TAB_LOCATION = ntb_preview
+
 >EMBED_TAB_COMMAND= gladevcp -x {XID} -H AccVelExtr.hal ./guiAccVelExtr.ui
 
 9. put the guiVelExtr.ui and AccVelExtr.hal files in the same folder of your .ini file and give the execution permission to both 
