@@ -5,6 +5,7 @@
 loadrt orLastVariation count=2
 loadrt ddt names=ddt_v
 loadrt AccVelExtr
+loadrt message names=message.m111  messages="Velocity Extrusion not enabled. Enabling it before with M111 command"
 
 # ################################################
 # THREADS
@@ -13,7 +14,8 @@ loadrt AccVelExtr
 addf orLastVariation.0			servo-thread  
 addf orLastVariation.1			servo-thread
 addf ddt_v 				          servo-thread
-addf AccVelExtr.0 		servo-thread
+addf AccVelExtr.0 		      servo-thread
+addf message.m111		        servo-thread
 
 # ##################################################
 # PWM and Temperature Signals
