@@ -1,0 +1,16 @@
+#!/bin/sh
+# M120 P0 Q0 . 
+#Set the Layer Height
+
+#halcmd setp hal_pru_generic.pwmgen.00.out.01.value $1
+#halcmd setp hal_pru_generic.pwmgen.00.out.01.value $1
+#Connette il nozzle alla posizione comandata della A
+#!/bin/bash
+Altezza-layer=$1
+Nozzle=$2
+halcmd setp VelocityExtrusion.0.Altezza-layer $1
+#if Nozzle >0
+#  halcmd setp VelocityExtruder.0.Nozzle Nozzle
+exit 0
+
+

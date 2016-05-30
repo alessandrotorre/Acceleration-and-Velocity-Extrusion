@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# M132: Extrusion Velocity Control Mode off
+# Example: M132
+# Turn off the extrusioin velocity control
+
+#halcmd setp hal_pru_generic.pwmgen.00.out.01.value $1
+#Connette il nozzle alla posizione comandata della A
+halcmd setp VelocityExtrusion.0.status 0
+
+#### se moveoff è disabilitato decommenta la riga sottostante e commenta quella dopo
+#halcmd unlinkp axis.3.motor-pos-cmd
+#halcmd unlinkp hu:pos-3
+halcmd unlinkp VelocityExtrusion.0.A
+halcmd unlinkp hm2_5i25.0.stepgen.03.position-cmd
+#### se moveoff è disabilitato decommenta la riga sottostante e commenta quella dopo
+#halcmd net emcmot.03.pos-cmd axis.3.motor-pos-cmd hm2_5i25.0.stepgen.03.position-cmd  
+halcmd net hu:pos-3 axis.3.motor-pos-cmd hm2_5i25.0.stepgen.03.position-cmd  
+exit 0
+
+
