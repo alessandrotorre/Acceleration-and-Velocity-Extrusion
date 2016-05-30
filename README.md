@@ -47,7 +47,7 @@ Mcodes leggends:
 - M151 link the nozzle
 
 Todo
-- improve the preventive homing of the A axis and g92 A0: there are problems when you Turn on and off the component with M110 and M111, because the value of the VelocityExtruder.0.A and axis.3.motor-pos can be different. 
-For example if the relative position, with velocity extrusion mode ON, was 1000mm and the axis.motor-pos is 85mm, when you do a M110 is like to command a movement of 1000-85=-915 mm to the A axis.
+- improve the preventive homing of the A axis and g92 A0. There is a problem when you Turn ON and OFF the component with M110 and M111. The values of the VelocityExtruder.0.A and axis.3.motor-pos can be different. 
+Example: The velocity extrusion mode is turned ON, and the relative position is 1000mm. Now you want to turn OFF the velocity extrusion, but the axis.motor-pos was 85mm. If you perform an M110 is like to command a movement of 1000-85=-915 mm to the A axis and you didn't want that. This it will never happen during a print, but it's a problem that need to be fixed setting offsets by the component before to be turned off.
 - fix the bugs of the postprocessor
 
