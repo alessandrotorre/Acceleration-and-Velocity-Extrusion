@@ -22,11 +22,8 @@ sudo halcompile --install orLastVariation.comp
 8. in the [DISPLAY] section of your ini file
 add
 >EMBED_TAB_NAME=Acceleration and Velocity of Extrusion
-> #IF GMOCAPPY decomment the next line
-> #EMBED_TAB_LOCATION = box_coolant_and_spindle  
-> #IF GMOCAPPY comment the next line
 >EMBED_TAB_LOCATION = ntb_preview
->EMBED_TAB_COMMAND= gladevcp -x {XID} -H VelExtr.hal ./guiVelExtr.ui
+>EMBED_TAB_COMMAND= gladevcp -x {XID} -H AccVelExtr.hal ./guiAccVelExtr.ui
 
 9. put the guiVelExtr.ui and AccVelExtr.hal files in the same folder of your .ini file and give the execution permission to both 
 10. add the postprocessor for CURA in the cura plugin folder.
