@@ -9,6 +9,8 @@ halcmd setp VelocityExtrusion.0.status 3
 else
 echo "$isenabled Componente velocity extruder disabilitato. Abilitarlo con M111"
 #eog /home/linuxcnc/linuxcnc/message/M130.png &
+halcmd setp message.m111.trigger 1
+halcmd setp message.m111.trigger 0
 fi
 
 
