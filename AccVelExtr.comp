@@ -1,8 +1,7 @@
 //   This is a component for EMC2 HAL
 //   Copyright 2016 Alessandro Torre <alessandro.torrebo@gmail.com>
-//   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-component VelocityExtrusion "Compute the position of the 4th axis related to the cross section area of the xy trajectory, the velocity of the Nozzle in the cartesian plane and its acceleration";
-
+//   
+component AccVelExtr "Compute the position of the 4th axis related to the cross section area of the xy trajectory, the velocity of the Nozzle in the cartesian plane and its acceleration";
 
 // FROM GUI
 pin in float Nozzle;
@@ -14,12 +13,10 @@ pin in float retraction_mm;
 pin in float Altezza_layer; 
 pin in float K;         	//fattore correzione estrusione
 
-
 //FROM HAL
 pin in float Vxy;
 pin in float Acc_xy;
 pin in float Apos;
-
 
 // A=[mm] extruder position, Va=[mm/s] Extruder Velocity Acc_a=[mm2/s] Extruder Acceleration
 pin out float A; 
