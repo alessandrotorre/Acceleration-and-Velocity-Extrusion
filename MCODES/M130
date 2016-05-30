@@ -3,10 +3,6 @@
 # M130: Extrusion Velocity Control Retraction
 # Example: M130
 
-halcmd unlinkp axis.3.motor-pos-cmd
-halcmd unlinkp VelocityExtrusion.0.A
-halcmd unlinkp hpg.stepgen.03.position-cmd
-halcmd net emcmot.03.pos-cmd VelocityExtrusion.0.A   hpg.stepgen.03.position-cmd
 halcmd setp VelocityExtrusion.0.status 4
 exit 0
 
