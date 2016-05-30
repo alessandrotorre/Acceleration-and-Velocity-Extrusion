@@ -14,7 +14,7 @@ Here, there is everything you need to test it.
 4) put all the Mcodes in your MCODE path 
 5) give permissions to the path ( sudo chmod +x -R /home/machinekit/machinekit/MCODE )
 6) install machinekit-dev 
-- sudo apt-get install machinekit-dev
+   sudo apt-get install machinekit-dev
 7) Install the components. In the pattern where you extracted the .comp, write:
 sudo halcompile --install VelocityExtrusion.comp
 sudo halcompile --install orLastVariation.comp
