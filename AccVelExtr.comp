@@ -106,7 +106,7 @@ switch(status)
 	A2_debug=Va*fperiod+K*Acc_a*fperiod*fperiod;	
 	break;
   case (4):   // 4 retraction
-	islinked=1;
+	islinked=0;
 	isprecharged=0;
 	isenabled=1;
 	if (Apos>=Apos_fixed)
