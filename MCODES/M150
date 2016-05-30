@@ -2,7 +2,13 @@
 # M150: Extrusion Velocity Control Unlink the Nozzle from XY movements
 # Example: M150
 
+isenabled=$(halcmd getp AccVelExtr.0.isenabled)
+
+if [ "$isenabled" = "TRUE" ];then
 halcmd setp VelocityExtrusion.0.status 2
-exit 0
+else
+echo "$isenabled Componente velocity extruder disabilitato. Abilitarlo con M111"
+#eog /home/linuxcnc/linuxcnc/message/M130.png &
+fi
 
 
