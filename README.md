@@ -6,7 +6,7 @@ Here, there is everything you need to test it.
 - A glade widget that can be added to yours GUI - gmoccapy or axis. 
 - the hal file with nettings "from and to" the component and the GUI.
 - the M codes 
-- the postprocessor for cura
+- the postprocessor for CURA
 
 1. setup a config with gmoccapy or axis as GUI
 2. create your MCODE path ( Ex. mkdir /home/machinekit/machinekit/MCODE)
