@@ -29,10 +29,10 @@ pin in float K;         	//PROPORTIONAL CORRECTIVE FACTOR FOR THE ACCELERATION T
 
 
 //FROM HAL
-pin in float Vxy;  	        //Nozzle velocity in the cartesian space [mm/s] from motion.current-vel
-pin in float Acc_xy;		//Nozzle acceleration in the cartesian space [mm/s2] from ddt_v.out
-pin in float Apos;		//Relative position of extruder A axis [mm] from halui.axis.3.pos-relative
-pin in float Apos_abs;		//Absolute position of extruder A axis [mm] from halui.axis.3.pos-commanded
+pin in float Vxy;  	        //NOZZLE VELOCITY IN THE CARTESIAN SPACE [mm/s] FROM motion.current-vel
+pin in float Acc_xy;		//NOZZLE ACCELERATION IN THE CARTESIAN SPACE [mm/s2] FROM ddt_v.out
+pin in float Apos;		//RELATIVE POSITION OF EXTRUDER A AXIS [mm] FROM halui.axis.3.pos-relative
+pin in float Apos_abs;		//ABSOLUTE POSITION OF EXTRUDER A AXIS [mm] FROM halui.axis.3.pos-commanded
 
 // A=[mm] is the position, Va=[mm/s] Acc_a=[mm2/s]
 pin out float A; 		//COMMANDED POSITION OF THE A AXIS CALCULATED BY THIS COMPONENT [mm]
