@@ -1,8 +1,22 @@
 //   This is a component for EMC2 HAL
 //   Copyright 2016 Alessandro Torre <alessandro.torrebo@gmail.com>
-//   
-component AccVelExtr "Compute the position of the 4th axis related to the cross section area of the xy trajectory, the velocity of the Nozzle in the cartesian plane and its acceleration";
+//
+//   This program is free software; you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation; either version 2 of the License, or
+//   (at your option) any later version.
+//
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+//
+//   You should have received a copy of the GNU General Public License
+//   along with this program; if not, write to the Free Software
+//   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+component VelocityExtrusion "Compute the position of the 4th axis related to the cross section area of the xy trajectory";
 
+//#include <math.h>
 // FROM GUI
 pin in float Nozzle;
 pin in float Diametro_Filamento;
@@ -13,32 +27,35 @@ pin in float retraction_mm;
 pin in float Altezza_layer; 
 pin in float K;         	//fattore correzione estrusione
 
-//FROM HAL
-pin in float Vxy;
-pin in float Acc_xy;
-pin in float Apos;
 
-// A=[mm] extruder position, Va=[mm/s] Extruder Velocity Acc_a=[mm2/s] Extruder Acceleration
-pin out float A; 
-pin out float Va;
-pin out float Acc_a;
+//FROM HAL
+pin in float Vxy;  	        //Velocità del nozzle nel piano cartesiano [mm/s] da motion.current-vel
+pin in float Acc_xy;		//Accelerazione del nozzle nel piano cartesiano [mm/s2] da ddt_v.out
+pin in float Apos;		//Posizione relativa dell'asse A proveniente da halui.axis.3.pos-relative
+pin in float Apos_abs;		//Posiizone assoluta dell'asse A proveniente da halui.axis.3.pos-commanded
+
+// A=[mm] is the position, Va=[mm/s] Acc_a=[mm2/s]
+pin out float A; 		//COMMANDED POSITION OF THE A AXIS CALCULATED BY THIS COMPONENT [mm]
+pin out float Va;		//VELOCITY OF THE A AXIS CALCULATED BY THIS COMPONENT [mm/s]
+pin out float Acc_a;		//ACCELERATION OF THE A AXIS CALCULATED BY THIS COMPONENT [mm/s2]
 
 
 //TO GUI
-pin out float Nozzle_out;
-pin out float Altezza_layer_out;
-pin out bit isretracted;	//LED
-pin out bit isprecharged;   	//LED
-pin out bit islinked;		//LED
-pin out bit isenabled;		//LED
+pin out float Nozzle_out;	//TO GUI NOZZLE LABEL
+pin out float Altezza_layer_out;//TO GUI ALTEZZA LAYER LABEL
+pin out bit isretracted;	//TO GUI LED
+pin out bit isprecharged;   	//TO GUI LED
+pin out bit islinked;		//TO GUI LED
+pin out bit isenabled;		//TO GUI LED
 
 //Debug
 pin out float AreaFilamento;
-pin out float Apos_fixed;       // Posizione relativa della coordinata A al momento precedente alla retraction o al precharge       
-pin out float A_debug;		// posizione cumulativa senza la componente accelerazione
+pin out float Apos_fixed;	// STORED POSITION BEFORE RETRACTION OR PRECHARGE
+pin out float A_debug;		// Posizione cumulativa senza la componente accelerazione
 pin out float A1_debug;		// Posizione non cumulativa senza la componente dell'accelerazione
 pin out float A2_debug;		// Posizione non cumulativa con la componente accelerazione
-pin out float Area_u; 		//Area di uscita.Area della sezione trasversale dopo l'estrusione [mm2] 
+pin out float Area_u; 		// Area di uscita.Area della sezione trasversale dopo l'estrusione [mm2]     
+
 
 
 // LEGGENDA del pin "status" FROM MCODE
@@ -56,10 +73,12 @@ license "GPL";
 ;;
 #include <rtapi_math.h>
 FUNCTION(_){
+
+//TO GUI
 Nozzle_out=Nozzle;
 Altezza_layer_out=Altezza_layer;
 
-// Riceve in input lo status 
+// Riceve in input lo stato 
 // LEGGENDA del pin "status" FROM MCODE
 // 0 not enable
 // 1 enable
@@ -72,70 +91,70 @@ if(Apos==0){
 switch(status)
 {
   case (0):   // 0 not enable
-	islinked=1;
-	isretracted=0 ;
-	isprecharged=0;
-	isenabled=0;
+	islinked=1;			//TO GUI LED
+	isretracted=0 ;			//TO GUI LED
+	isprecharged=0;			//TO GUI LED
+	isenabled=0;			//TO GUI LED	
 	break;
 
   case (1):   // 1 enable
-	islinked=0;
-	isretracted=0 ;
-	isprecharged=0;
-	isenabled=1;
+	islinked=0;			//TO GUI LED
+	isretracted=0 ;			//TO GUI LED
+	isprecharged=0;			//TO GUI LED
+	isenabled=1;			//TO GUI LED
 	break;
 
   case (2):   // 2 not linked
-	islinked=0;
-	isretracted=0 ;
-	isprecharged=0;
-	isenabled=1;
+	islinked=0;			//TO GUI LED
+	isretracted=0 ;			//TO GUI LED
+	isprecharged=0;			//TO GUI LED
+	isenabled=1;			//TO GUI LED
 	break;
   case (3):   // 3 linked
-	islinked=1;
-	isretracted=0 ;
-	isprecharged=0;
-	isenabled=1;
+	islinked=1;			//TO GUI LED
+	isretracted=0 ;			//TO GUI LED
+	isprecharged=0;			//TO GUI LED
+	isenabled=1;			//TO GUI LED
 	Area_u=Altezza_layer*Nozzle;						//Area di uscita [mm2]
 	AreaFilamento = (Diametro_Filamento*Diametro_Filamento*3.141)/(4); 	//Calcolo area filamento [mm2]
 	Va=(Vxy*Area_u)/(AreaFilamento);					//calcolo della velocità di estrusione [mm/s]
 	Acc_a=Acc_xy*Area_u/AreaFilamento;    					//calcolo della accelerazione di estrusione [mm/s2] 
-	A=A+Va*fperiod+K*Acc_a*fperiod*fperiod;					//calcolo della posizione di estrusione [mm] che comanderà il 4° asse A
-	A_debug=A_debug+Va*fperiod;
-	A1_debug=Va*fperiod;
-	A2_debug=Va*fperiod+K*Acc_a*fperiod*fperiod;	
+	A=A+(Va*fperiod)+(K*Acc_a*fperiod*fperiod);				//calcolo della posizione di estrusione [mm] che comanderà il 4° asse A
+	A_debug=A_debug+Va*fperiod;						//calcolo della posizione cumulativa senza la componente accelerazione
+	A1_debug=Va*fperiod;							//calcolo della posizione istantanea senza la componente accelerazione
+	A2_debug=Va*fperiod+K*Acc_a*fperiod*fperiod;				//calcolo della posizione istantanea + la componente accelerazione
 	break;
   case (4):   // 4 retraction
-	islinked=0;
-	isprecharged=0;
-	isenabled=1;
-	if (Apos>=Apos_fixed)
-	    Apos_fixed=A=Apos;
+	islinked=0;			//TO GUI LED
+	isprecharged=0;			//TO GUI LED
+	isenabled=1;			//TO GUI LED
+	if (Apos>=Apos_fixed)		
+	    Apos_fixed=A=Apos;		//STORE THE POSITION BEFORE RETRACT
 	if ( A > (Apos_fixed-retraction_mm) ){
-		Va=-Vretraction;
-		isretracted=0;
+		Va=-Vretraction;	//SETS NEGATIVE VELOCITY UNITL THE RETRACT LENGHT IS REACHED
+		isretracted=0;		//TO GUI LED
 		}
 	else {
-		Va=0;
-		isretracted=1;
+		Va=0;			//SETS 0 VELOCITY WHEN THE RETRACT LENGHT IS REACHED
+		isretracted=1;		//TO GUI LED
 	}
-	A=A+Va*fperiod;
+	A=A+(Va*fperiod)+(K*Acc_a*fperiod*fperiod);				//calcolo della posizione di estrusione [mm] che comanderà il 4° asse A
 	break;
   case (5):    // 5 precharge
-	islinked=0;
-	isretracted=0;
-	isenabled=1;
+	islinked=0;			//TO GUI LED
+	isretracted=0;			//TO GUI LED
+	isenabled=1;			//TO GUI LED
 	if (Apos<=Apos_fixed)
-	    Apos_fixed=A=Apos;
+	    Apos_fixed=A=Apos;		//STORE THE POSITION BEFORE PRECHARGE
 	if ( A < (Apos_fixed+precharge_mm ) ){
-		Va=Vprecharge;
-		isprecharged=0;
+		Va=Vprecharge;		//SETS POSITIVE VELOCITY UNITL THE PRECHARGE LENGHT IS REACHED
+		isprecharged=0;		//TO GUI LED
 	}
 	else{
-		Va=0;
-		isprecharged=1;
+		Va=0;			//SETS 0 VELOCITY WHEN THE PRECHARGE LENGHT IS REACHED
+		isprecharged=1;		//TO GUI LED
 	}
-	A=A+Va*fperiod;
+	A=A+(Va*fperiod)+(K*Acc_a*fperiod*fperiod);				//calcolo della posizione di estrusione [mm] che comanderà il 4° asse A
 	break;	
   
   
