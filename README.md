@@ -50,4 +50,4 @@ Todo
 - improve the preventive homing of the A axis and g92 A0: there are problems when you Turn on and off the component with M110 and M111, because the value of the VelocityExtruder.0.A and axis.3.motor-pos can be different. 
 For example if the relative position, with velocity extrusion mode ON, was 1000mm and the axis.motor-pos is 85mm, when you do a M110 is like to command a movement of 1000-85=-915 mm to the A axis.
 - fix the bugs of the postprocessor
-- fix the MCODES: if pin "Velocity.Extrusion.0.isenbaled == 0" you can't command MCODE as M130 M131 M150 or M151, so u have to receive a warning message.
+- fix the MCODES: if pin "Velocity.Extrusion.0.isenbaled != TRUE" you can't command MCODE as M130 M131 M150 or M151. I'm able to display a warning message in the stderr display, but not yet in the GUI. Do you know a way to call rtapi_print_msg(RTAPI_MSG_ERR, " ..........") from bash or from MCODE?
