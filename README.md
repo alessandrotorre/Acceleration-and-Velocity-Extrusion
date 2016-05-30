@@ -21,6 +21,7 @@ sudo halcompile --install orLastVariation.comp
 
 8. in the [DISPLAY] section of your ini file
 add
+
 >EMBED_TAB_NAME=Acceleration and Velocity of Extrusion
 >EMBED_TAB_LOCATION = ntb_preview
 >EMBED_TAB_COMMAND= gladevcp -x {XID} -H AccVelExtr.hal ./guiAccVelExtr.ui
