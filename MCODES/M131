@@ -3,10 +3,6 @@
 # M131: Extrusion Velocity Control Precharge ON
 # Example: M131
 
-halcmd unlinkp axis.3.motor-pos-cmd
-halcmd unlinkp VelocityExtrusion.0.A
-halcmd unlinkp hpg.stepgen.03.position-cmd
-#halcmd net emcmot.03.pos-cmd VelocityExtrusion.0.A   hpg.stepgen.03.position-cmd
 halcmd setp VelocityExtrusion.0.status 5
 exit 0
 
