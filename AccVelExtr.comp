@@ -52,7 +52,7 @@ pin out bit isenabled;		//TO GUI LED
 pin out float AreaFilamento;
 pin out float Apos_fixed;	// STORED POSITION BEFORE RETRACTION OR PRECHARGE
 pin out float A_debug;		// Posizione cumulativa senza la componente accelerazione
-pin out float A1_debug;		// Posizione non cumulativa senza la componente dell'accelerazione
+pin out float A1_debug;		// Posizione non cumulativa senza la componente accelerazione
 pin out float A2_debug;		// Posizione non cumulativa con la componente accelerazione
 pin out float Area_u; 		// Area di uscita.Area della sezione trasversale dopo l'estrusione [mm2]     
 
