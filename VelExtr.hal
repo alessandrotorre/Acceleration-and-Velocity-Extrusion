@@ -4,7 +4,7 @@
 
 loadrt orLastVariation count=3
 loadrt ddt names=ddt_v
-loadrt VelocityExtrusion
+loadrt AccVelExtr
 
 # ################################################
 # THREADS
@@ -14,7 +14,7 @@ addf orLastVariation.0			servo-thread
 addf orLastVariation.1			servo-thread
 addf orLastVariation.2			servo-thread
 addf ddt_v 				          servo-thread
-addf VelocityExtrusion.0 		servo-thread
+addf AccVelExtr.0 		servo-thread
 
 # ##################################################
 # PWM and Temperature Signals
@@ -25,27 +25,27 @@ net security.pwm 	halui.machine.is-on =>  guiVelExtr.enable
 
 # send the velocity and Accelerations of X and Y to Velocity extrusion component
 
-net XYvel motion.current-vel => VelocityExtrusion.0.Vxy ddt_v.in
-net XYacc ddt_v.out          => VelocityExtrusion.0.Acc-xy
+net XYvel motion.current-vel => AccVelExtr.0.Vxy ddt_v.in
+net XYacc ddt_v.out          => AccVelExtr.0.Acc-xy
 
 
 #The easiest way to add halui is to add the following to the [HAL] section of the ini file.
 #HALUI = halui
 
 
-net Apos-fixed halui.axis.3.pos-relative => VelocityExtrusion.0.Apos
+net Apos-fixed halui.axis.3.pos-relative => AccVelExtr.0.Apos
 
 # Velocity Extrusion parameters
 
-setp VelocityExtrusion.0.Diametro-Filamento 1.75
-setp VelocityExtrusion.0.Altezza-layer 0.3
-setp VelocityExtrusion.0.Nozzle 0.6
-setp VelocityExtrusion.0.status 0
-setp VelocityExtrusion.0.Vprecharge 15
-setp VelocityExtrusion.0.Vretraction 15
-setp VelocityExtrusion.0.precharge-mm 3
-setp VelocityExtrusion.0.retraction-mm 3
-setp VelocityExtrusion.0.K 0.5
+setp AccVelExtr.0.Diametro-Filamento 1.75
+setp AccVelExtr.0.Altezza-layer 0.3
+setp AccVelExtr.0.Nozzle 0.6
+setp AccVelExtr.0.status 0
+setp AccVelExtr.0.Vprecharge 15
+setp AccVelExtr.0.Vretraction 15
+setp AccVelExtr.0.precharge-mm 3
+setp AccVelExtr.0.retraction-mm 3
+setp AccVelExtr.0.K 0.5
 
 ##########################
 # gladevcp panel
@@ -59,27 +59,27 @@ setp VelocityExtrusion.0.K 0.5
 
 # led Vel. extrusion
 
-net VE_isenabled_led 		  VelocityExtrusion.0.isenabled 		=> guiVelExtr.led_Vextr_enabled         guiVelExtr.VelExtr.enable 
-net VE_isprecharged_led		VelocityExtrusion.0.isprecharged 	=> guiVelExtr.led_precharge_enabled
-net VE_isretracted_led 		VelocityExtrusion.0.isretracted 	=> guiVelExtr.led_retraction_enabled
-net VE_linked_led 		      VelocityExtrusion.0.islinked 		=> guiVelExtr.led_nozzle_linked 
+net VE_isenabled_led 		  AccVelExtr.0.isenabled 		=> guiVelExtr.led_Vextr_enabled         guiVelExtr.VelExtr.enable 
+net VE_isprecharged_led		AccVelExtr.0.isprecharged 	=> guiVelExtr.led_precharge_enabled
+net VE_isretracted_led 		AccVelExtr.0.isretracted 	=> guiVelExtr.led_retraction_enabled
+net VE_linked_led 		      AccVelExtr.0.islinked 		=> guiVelExtr.led_nozzle_linked 
 
 
 # FROM GUI TO COMPONENT
 #M130 				                          setp 					=> orLastVariation.0.in1
-#net VE_retraction_orLAST	orLastVariation.0.out 			=> VelocityExtrusion.0.retraction-mm
+#net VE_retraction_orLAST	orLastVariation.0.out 			=> AccVelExtr.0.retraction-mm
 
 # in this configuration the retraction and precharge can be only equal
 
 #M131                             setp 								=> orLastVariation.1.in1
 net VE_precharge  		      guiVelExtr.precharge 	 		=> orLastVariation.1.in2
-net VE_precharge_orLAST		orLastVariation.1.out 			=> VelocityExtrusion.0.precharge-mm VelocityExtrusion.0.retraction-mm
+net VE_precharge_orLAST		orLastVariation.1.out 			=> AccVelExtr.0.precharge-mm AccVelExtr.0.retraction-mm
 
 #M180									                          => orLastVariation.2.in1
 net VE_K 	   		            guiVelExtr.K 	 			=> orLastVariation.2.in2
-net VE_K_orLAST 		orLastVariation.2.out 			=> VelocityExtrusion.0.K 
+net VE_K_orLAST 		orLastVariation.2.out 			=> AccVelExtr.0.K 
 
-net VE_retr_prech_vel		        guiVelExtr.vel			=> VelocityExtrusion.0.Vretraction VelocityExtrusion.0.Vprecharge
-net VE_diameter			       guiVelExtr.diameter			=> VelocityExtrusion.0.Diametro-Filamento  	
-net VE_nozzle			            guiVelExtr.nozzle			<= VelocityExtrusion.0.Nozzle-out		
-net VE_altezza_layer 		guiVelExtr.layer_height			<= VelocityExtrusion.0.Altezza-layer-out
+net VE_retr_prech_vel		        guiVelExtr.vel			=> AccVelExtr.0.Vretraction AccVelExtr.0.Vprecharge
+net VE_diameter			       guiVelExtr.diameter			=> AccVelExtr.0.Diametro-Filamento  	
+net VE_nozzle			            guiVelExtr.nozzle			<= AccVelExtr.0.Nozzle-out		
+net VE_altezza_layer 		guiVelExtr.layer_height			<= AccVelExtr.0.Altezza-layer-out
