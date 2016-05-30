@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# M141: Extrusion Velocity Control Mode on
+# M111: Extrusion Velocity Control Mode on
 # Example: M111
 # Turn on the extrusioin velocity control
 
