@@ -20,8 +20,8 @@ addf AccVelExtr.0 		servo-thread
 # PWM and Temperature Signals
 # ##################################################
 
-# abilita il widget solo quando la macchina è accesa guiVelExtr.enable <= halui.machine.is-on 
-net security.pwm 	halui.machine.is-on =>  guiVelExtr.enable   	
+# abilita il widget solo quando la macchina è accesa guiAccVelExtr.enable <= halui.machine.is-on 
+net security.pwm 	halui.machine.is-on =>  guiAccVelExtr.enable   	
 
 # send the velocity and Accelerations of X and Y to Velocity extrusion component
 
@@ -59,10 +59,10 @@ setp AccVelExtr.0.K 0.5
 
 # led Vel. extrusion
 
-net VE_isenabled_led 		  AccVelExtr.0.isenabled 		=> guiVelExtr.led_Vextr_enabled         guiVelExtr.VelExtr.enable 
-net VE_isprecharged_led		AccVelExtr.0.isprecharged 	=> guiVelExtr.led_precharge_enabled
-net VE_isretracted_led 		AccVelExtr.0.isretracted 	=> guiVelExtr.led_retraction_enabled
-net VE_linked_led 		      AccVelExtr.0.islinked 		=> guiVelExtr.led_nozzle_linked 
+net VE_isenabled_led 		  AccVelExtr.0.isenabled 		=> guiAccVelExtr.led_Vextr_enabled         guiAccVelExtr.VelExtr.enable 
+net VE_isprecharged_led		AccVelExtr.0.isprecharged 	=> guiAccVelExtr.led_precharge_enabled
+net VE_isretracted_led 		AccVelExtr.0.isretracted 	=> guiAccVelExtr.led_retraction_enabled
+net VE_linked_led 		      AccVelExtr.0.islinked 		=> guiAccVelExtr.led_nozzle_linked 
 
 
 # FROM GUI TO COMPONENT
@@ -72,14 +72,14 @@ net VE_linked_led 		      AccVelExtr.0.islinked 		=> guiVelExtr.led_nozzle_linke
 # in this configuration the retraction and precharge can be only equal
 
 #M131                             setp 								=> orLastVariation.1.in1
-net VE_precharge  		      guiVelExtr.precharge 	 		=> orLastVariation.1.in2
+net VE_precharge  		      guiAccVelExtr.precharge 	 		=> orLastVariation.1.in2
 net VE_precharge_orLAST		orLastVariation.1.out 			=> AccVelExtr.0.precharge-mm AccVelExtr.0.retraction-mm
 
 #M180									                          => orLastVariation.2.in1
-net VE_K 	   		            guiVelExtr.K 	 			=> orLastVariation.2.in2
+net VE_K 	   		            guiAccVelExtr.K 	 			=> orLastVariation.2.in2
 net VE_K_orLAST 		orLastVariation.2.out 			=> AccVelExtr.0.K 
 
-net VE_retr_prech_vel		        guiVelExtr.vel			=> AccVelExtr.0.Vretraction AccVelExtr.0.Vprecharge
-net VE_diameter			       guiVelExtr.diameter			=> AccVelExtr.0.Diametro-Filamento  	
-net VE_nozzle			            guiVelExtr.nozzle			<= AccVelExtr.0.Nozzle-out		
-net VE_altezza_layer 		guiVelExtr.layer_height			<= AccVelExtr.0.Altezza-layer-out
+net VE_retr_prech_vel		        guiAccVelExtr.vel			=> AccVelExtr.0.Vretraction AccVelExtr.0.Vprecharge
+net VE_diameter			       guiAccVelExtr.diameter			=> AccVelExtr.0.Diametro-Filamento  	
+net VE_nozzle			            guiAccVelExtr.nozzle			<= AccVelExtr.0.Nozzle-out		
+net VE_altezza_layer 		guiAccVelExtr.layer_height			<= AccVelExtr.0.Altezza-layer-out
