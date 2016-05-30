@@ -4,7 +4,7 @@ This is a step by step guide  to test the version of Acceleration and Velocity o
 Here, there is everything you need to test it.
 
 - A glade widget that can be added to yours GUI - gmoccapy or axis. 
-- the hal file with nettings "from and to" the component and the GUI.
+- the hal file with links "from and to" the component and the GUI.
 - the M codes 
 - the postprocessor for CURA
 
