@@ -21,7 +21,7 @@ addf message.m111		        servo-thread
 # PWM and Temperature Signals
 # ##################################################
 
-# abilita il widget solo quando la macchina è accesa guiAccVelExtr.enable <= halui.machine.is-on 
+# enable the widget if the machine is on guiAccVelExtr.enable <= halui.machine.is-on 
 net security.pwm 	halui.machine.is-on =>  guiAccVelExtr.enable   	
 
 # send the velocity and Accelerations of X and Y to Velocity extrusion component
