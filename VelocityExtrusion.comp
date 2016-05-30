@@ -1,0 +1,147 @@
+//   This is a component for EMC2 HAL
+//   Copyright 2016 Alessandro Torre <alessandro.torrebo@gmail.com>
+//   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+component VelocityExtrusion "Compute the position of the 4th axis related to the cross section area of the xy trajectory, the velocity of the Nozzle in the cartesian plane and its acceleration";
+
+
+// FROM GUI
+pin in float Nozzle;
+pin in float Diametro_Filamento;
+pin in float Vretraction;
+pin in float Vprecharge;
+pin in float precharge_mm;
+pin in float retraction_mm;
+pin in float Altezza_layer; 
+pin in float K;         	//fattore correzione estrusione
+
+
+//FROM HAL
+pin in float Vxy;
+pin in float Acc_xy;
+pin in float Apos;
+
+
+// A=[mm] extruder position, Va=[mm/s] Extruder Velocity Acc_a=[mm2/s] Extruder Acceleration
+pin out float A; 
+pin out float Va;
+pin out float Acc_a;
+
+
+//TO GUI
+pin out float Nozzle_out;
+pin out float Altezza_layer_out;
+pin out bit isretracted;	//LED
+pin out bit isprecharged;   	//LED
+pin out bit islinked;		//LED
+pin out bit isenabled;		//LED
+
+//Debug
+pin out float AreaFilamento;
+pin out float Apos_fixed;       // Posizione relativa della coordinata A al momento precedente alla retraction o al precharge       
+pin out float A_debug;		// posizione cumulativa senza la componente accelerazione
+pin out float A1_debug;		// Posizione non cumulativa senza la componente dell'accelerazione
+pin out float A2_debug;		// Posizione non cumulativa con la componente accelerazione
+pin out float Area_u; 		//Area di uscita.Area della sezione trasversale dopo l'estrusione [mm2] 
+
+
+// LEGGENDA del pin "status" FROM MCODE
+// 0 not enable
+// 1 enable
+// 2 not linked
+// 3 linked
+// 4 retraction
+// 5 precharge
+pin in s32 status;
+
+
+function _;
+license "GPL";
+;;
+#include <rtapi_math.h>
+FUNCTION(_){
+Nozzle_out=Nozzle;
+Altezza_layer_out=Altezza_layer;
+
+// Riceve in input lo status 
+// LEGGENDA del pin "status" FROM MCODE
+// 0 not enable
+// 1 enable
+// 2 not linked
+// 3 linked
+// 4 retraction
+// 5 precharge
+if(Apos==0){
+  A=0;}
+switch(status)
+{
+  case (0):   // 0 not enable
+	islinked=1;
+	isretracted=0 ;
+	isprecharged=0;
+	isenabled=0;
+	break;
+
+  case (1):   // 1 enable
+	islinked=0;
+	isretracted=0 ;
+	isprecharged=0;
+	isenabled=1;
+	break;
+
+  case (2):   // 2 not linked
+	islinked=0;
+	isretracted=0 ;
+	isprecharged=0;
+	isenabled=1;
+	break;
+  case (3):   // 3 linked
+	islinked=1;
+	isretracted=0 ;
+	isprecharged=0;
+	isenabled=1;
+	Area_u=Altezza_layer*Nozzle;						//Area di uscita [mm2]
+	AreaFilamento = (Diametro_Filamento*Diametro_Filamento*3.141)/(4); 	//Calcolo area filamento [mm2]
+	Va=(Vxy*Area_u)/(AreaFilamento);					//calcolo della velocità di estrusione [mm/s]
+	Acc_a=Acc_xy*Area_u/AreaFilamento;    					//calcolo della accelerazione di estrusione [mm/s2] 
+	A=A+Va*fperiod+K*Acc_a*fperiod*fperiod;					//calcolo della posizione di estrusione [mm] che comanderà il 4° asse A
+	A_debug=A_debug+Va*fperiod;
+	A1_debug=Va*fperiod;
+	A2_debug=Va*fperiod+K*Acc_a*fperiod*fperiod;	
+	break;
+  case (4):   // 4 retraction
+	islinked=1;
+	isprecharged=0;
+	isenabled=1;
+	if (Apos>=Apos_fixed)
+	    Apos_fixed=A=Apos;
+	if ( A > (Apos_fixed-retraction_mm) ){
+		Va=-Vretraction;
+		isretracted=0;
+		}
+	else {
+		Va=0;
+		isretracted=1;
+	}
+	A=A+Va*fperiod;
+	break;
+  case (5):    // 5 precharge
+	islinked=0;
+	isretracted=0;
+	isenabled=1;
+	if (Apos<=Apos_fixed)
+	    Apos_fixed=A=Apos;
+	if ( A < (Apos_fixed+precharge_mm ) ){
+		Va=Vprecharge;
+		isprecharged=0;
+	}
+	else{
+		Va=0;
+		isprecharged=1;
+	}
+	A=A+Va*fperiod;
+	break;	
+  
+  
+}
+
+}

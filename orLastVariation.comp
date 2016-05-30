@@ -1,0 +1,57 @@
+/******************************************************************************
+ *
+ * Copyright (C) 2016 Alessandro Torre alessandro.torrebo@gmail.com
+ *
+ * This module checks the wich of the inputs is changed and take it as output
+ ******************************************************************************/
+component orLastVariation "" ;
+
+//Parameters
+
+
+//PIN 
+
+pin in 		float 	in1;   
+pin in		float	in2;
+pin out 	float 	out		"give the value that changhed";
+pin out 	float 	in1_old;
+pin out 	float 	in2_old;
+function _ fp "Update the output value";
+
+author "Alessandro Torre";
+license "GPL"; 
+;;
+
+// INTERNAL VARIABLES
+//float in1_old ;
+//float in2_old ;
+float delta1;
+float delta2;
+
+// PROGRAM 
+
+
+FUNCTION(_)
+{
+delta1=(in1-in1_old);
+in1_old=in1;
+
+delta2=(in2-in2_old);
+in2_old=in2;
+
+if (delta1!=0){
+    delta1=delta1*delta1;
+}
+if(delta2!=0){
+  delta2=delta2*delta2;
+}
+
+if (delta1>delta2){
+  out=in1;
+}
+else if (delta2>delta1){
+  out=in2;
+}
+
+}
+
