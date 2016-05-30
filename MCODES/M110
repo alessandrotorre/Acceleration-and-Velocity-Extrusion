@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # M130: Extrusion Velocity Control Mode off
-# Example: M130
+# Example: M110
 # Turn off the extrusioin velocity control
 
 
