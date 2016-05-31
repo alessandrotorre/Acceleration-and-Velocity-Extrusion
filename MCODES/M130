@@ -6,7 +6,7 @@
 isenabled=$(halcmd getp AccVelExtr.0.isenabled)
 
 if [ "$isenabled" = "TRUE" ];then
-halcmd setp VelocityExtrusion.0.status 4
+halcmd setp VelocityExtrusion.0.status 3
 else
 echo "$isenabled componente velocity extruder disabilitato. Abilitarlo con M111"
 #eog /home/linuxcnc/linuxcnc/message/M130.png &
