@@ -6,10 +6,10 @@
 
 
 halcmd setp VelocityExtrusion.0.status 0
-halcmd unlinkp axis.3.motor-pos-cmd
-halcmd unlinkp VelocityExtrusion.0.A
-halcmd unlinkp hpg.stepgen.03.position-cmd
-halcmd net emcmot.03.pos-cmd axis.3.motor-pos-cmd hpg.stepgen.03.position-cmd 
+#halcmd unlinkp axis.3.motor-pos-cmd
+#halcmd unlinkp VelocityExtrusion.0.A
+#halcmd unlinkp hpg.stepgen.03.position-cmd
+#halcmd net emcmot.03.pos-cmd axis.3.motor-pos-cmd hpg.stepgen.03.position-cmd 
  
 exit 0
 
