@@ -3,6 +3,7 @@
 # ###################################
 
 loadrt orLastVariation count=2
+# loadrt ddt names=ddt_x,ddt_y,ddt_v
 loadrt ddt names=ddt_v
 loadrt AccVelExtr
 loadrt message names=message.m111  messages="Velocity Extrusion not enabled. Enabling it before with M111 command"
@@ -13,6 +14,8 @@ loadrt message names=message.m111  messages="Velocity Extrusion not enabled. Ena
 
 addf orLastVariation.0			servo-thread  
 addf orLastVariation.1			servo-thread
+#addf ddt_x 				          servo-thread
+#addf ddt_y 				          servo-thread
 addf ddt_v 				          servo-thread
 addf AccVelExtr.0 		      servo-thread
 addf message.m111		        servo-thread
@@ -26,13 +29,27 @@ net security.pwm 	halui.machine.is-on =>  guiAccVelExtr.enable
 
 # send the velocity and Accelerations of X and Y to Velocity extrusion component
 
+#net emcmot.00.pos-cmd => ddt_x.in
+#net emcmot.01.pos-cmd => ddt_y.in
+#net VE-Xvel ddt_x.out => AccVelExtr.0.Vx
+#net VE-Yvel ddt_y.out => AccVelExtr.0.Vy
+
 net XYvel motion.current-vel => AccVelExtr.0.Vxy ddt_v.in
 net XYacc ddt_v.out          => AccVelExtr.0.Acc-xy
 
 #The easiest way to add halui is to add the following to the [HAL] section of the ini file.
 #HALUI = halui
 
-net Apos-fixed halui.axis.3.pos-relative => AccVelExtr.0.Apos
+net Apos-rel halui.axis.3.pos-relative => AccVelExtr.0.Apos-rel
+net Apos-abs halui.axis.3.pos-commanded => AccVelExtr.0.Apos-abs
+
+unlinkp hpg.stepgen.00.position-cmd
+unlinkp hpg.stepgen.00.position-fb
+
+net emcmot.00.pos-cmd => AccVelExtr.0.motor-pos-cmd
+net emcmot.00.pos-fb => AccVelExtr.0.motor-pos-fb
+net VE_pos_cmd AccVelExtr.0.A => hpg.stepgen.00.position-cmd
+net VE_pos_fb AccVelExtr.0.A-fb <= hpg.stepgen.00.position-fb
 
 # Velocity Extrusion parameters
 
