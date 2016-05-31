@@ -61,6 +61,7 @@ pin out float A1_debug;		// INSTANTANEUSLY POSITION WITHOUT ACCELERATION COMPONE
 pin out float A2_debug;		// INSTANTANEUSLY POSITION WITH ACCELERATION COMPONENT
 pin out float Area_u; 		// EXIT AREA AFTER EXTRUSION LAYER_HEIGHT*NOZZLE_DIAMETER [mm2]     
 pin out float A_temp;
+pin out float A_fb_temp;
 
 
 pin in s32 status;
@@ -93,8 +94,8 @@ switch(status)
 	isprecharged=0;			//TO GUI LED
 	isenabled=0;			//TO GUI LED
 	Apos_fixed=Apos_rel;
-	A=motor_pos_cmd;
-	A_fb=motor_pos_fb;
+	A_temp=motor_pos_cmd;
+	A_fb_temp=motor_pos_fb;
 	break;
   case (1):   // 1 linked
 	islinked=1;			//TO GUI LED
@@ -103,15 +104,14 @@ switch(status)
 	isenabled=1;			//TO GUI LED
 	Area_u=Altezza_layer*Nozzle;						//EXIT AREA [mm2]
 	AreaFilamento = (Diametro_Filamento*Diametro_Filamento*3.141)/(4); 	//FILAMENT SECTION [mm2]
-	//Vxy=sqrt(Vx*Vx+Vy*Vy)							//CARTESIAN VELOCITY [mm/S]
+	//Vxy=sqrt(Vx*Vx+Vy*Vy)							//CARTESIAN VELOCITY CALCULATED BY VELOCITY OF X AND VELOCITY OF Y[mm/S]
 	Va=(Vxy*Area_u)/(AreaFilamento);					//EXTRUSION VELOCITY [mm/s]
 	Acc_a=Acc_xy*Area_u/AreaFilamento;    					//EXTRUSION ACCELERATION [mm/s2] 
 	A_temp=A_temp+(Va*fperiod)+(K*Acc_a*fperiod*fperiod);			//CUMULATIVE EXTRUSION POSITION [mm] A+ offset G92 (Apos_rel)
 	A_debug=A_debug+Va*fperiod;						//DEBUG:CUMULATIVE EXTRUSION POSITION WITHOUT ACCELERATION COMPONENT [mm]
 	A1_debug=Va*fperiod;							//DEBUG: INSTANTANEUSLY EXTRUSION POSITION WITHOUT ACCELERATION COMPONENT [mm]
 	A2_debug=Va*fperiod+K*Acc_a*fperiod*fperiod;				//DEBUG: INSTANTANEUSLY EXTRUSION POSITION WITH ACCELERATION COMPONENT [mm]
-	A=A_temp;
-	A_fb=A;
+	A_fb_temp=A_temp;
 	break;
 	
   case (2):   // 2 not linked
@@ -136,8 +136,7 @@ switch(status)
 		isretracted=1;		//TO GUI LED
 	}
 	A_temp=A_temp+(Va*fperiod)+(K*Acc_a*fperiod*fperiod);				//CUMULATIVE EXTRUSION POSITION [mm] A
-	A=A_temp;
-	A_fb=A;
+	A_fb_temp=A_temp;
 	break;
   case (4):    // 4 precharge
 	islinked=0;			//TO GUI LED
@@ -154,12 +153,11 @@ switch(status)
 		isprecharged=1;		//TO GUI LED
 	}
 	A_temp=A_temp+(Va*fperiod)+(K*Acc_a*fperiod*fperiod);				//CUMULATIVE EXTRUSION POSITION [mm] A
-	A=A_temp;
-	A_fb=A;
-
+	A_fb_temp=A_temp;
 	break;	
   
   
 }
-
+A=A_temp;
+A_fb=A_fb_temp;
 }
