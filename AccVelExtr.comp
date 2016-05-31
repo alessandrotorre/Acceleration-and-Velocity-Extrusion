@@ -16,7 +16,7 @@
 //   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 component VelocityExtrusion "Compute the position of the 4th axis related to the cross section area of the xy trajectory";
 
-//#include <math.h>
+//#include <rtapi_math.h>
 // FROM GUI
 pin in float Nozzle;
 pin in float Diametro_Filamento;
@@ -29,13 +29,18 @@ pin in float K;         	//PROPORTIONAL CORRECTIVE FACTOR FOR THE ACCELERATION T
 
 
 //FROM HAL
+//pin in float Vx;		//X AXIS VELOCITY 
+//pin in float Vy;		//Y AXIS VELOCITY
 pin in float Vxy;  	        //NOZZLE VELOCITY IN THE CARTESIAN SPACE [mm/s] FROM motion.current-vel
 pin in float Acc_xy;		//NOZZLE ACCELERATION IN THE CARTESIAN SPACE [mm/s2] FROM ddt_v.out
-pin in float Apos;		//RELATIVE POSITION OF EXTRUDER A AXIS [mm] FROM halui.axis.3.pos-relative
+pin in float Apos_rel;		//RELATIVE POSITION OF EXTRUDER A AXIS [mm] FROM halui.axis.3.pos-relative
 pin in float Apos_abs;		//ABSOLUTE POSITION OF EXTRUDER A AXIS [mm] FROM halui.axis.3.pos-commanded
+pin in float motor_pos_cmd;	//MANUAL COMMANDED POSITION OF EXTRUDER A AXIS [mm] FROM axis.3.motor-pos-cmd
+pin in float motor_pos_fb;	//DISPLAYED POSITION CONSIDERING OFFSET LIKE G92
 
 // A=[mm] is the position, Va=[mm/s] Acc_a=[mm2/s]
 pin out float A; 		//COMMANDED POSITION OF THE A AXIS CALCULATED BY THIS COMPONENT [mm]
+pin out float A_fb;
 pin out float Va;		//VELOCITY OF THE A AXIS CALCULATED BY THIS COMPONENT [mm/s]
 pin out float Acc_a;		//ACCELERATION OF THE A AXIS CALCULATED BY THIS COMPONENT [mm/s2]
 
@@ -55,16 +60,9 @@ pin out float A_debug;		// CUMULATIVE POSITION WITHOUT ACCELERATION COMPONENT
 pin out float A1_debug;		// INSTANTANEUSLY POSITION WITHOUT ACCELERATION COMPONENT
 pin out float A2_debug;		// INSTANTANEUSLY POSITION WITH ACCELERATION COMPONENT
 pin out float Area_u; 		// EXIT AREA AFTER EXTRUSION LAYER_HEIGHT*NOZZLE_DIAMETER [mm2]     
+pin out float A_temp;
 
 
-
-// LEGEND ABOUT THE CODING OF THE "status" PIN FROM MCODE
-// 0 not enable
-// 1 enable
-// 2 not linked
-// 3 linked
-// 4 retraction
-// 5 precharge
 pin in s32 status;
 
 
@@ -81,58 +79,55 @@ Altezza_layer_out=Altezza_layer;
 
 // LEGEND ABOUT THE "status" PIN FROM MCODE
 // 0 not enable
-// 1 enable
+// 1 linked
 // 2 not linked
-// 3 linked
-// 4 retraction
-// 5 precharge
-if(Apos==0){
-  A=0;}
+// 3 retraction
+// 4 precharge
+
+
 switch(status)
 {
   case (0):   // 0 not enable
-	islinked=1;			//TO GUI LED
+	islinked=0;			//TO GUI LED
 	isretracted=0 ;			//TO GUI LED
 	isprecharged=0;			//TO GUI LED
 	isenabled=0;			//TO GUI LED
-	Apos_fixed=Apos;
+	Apos_fixed=Apos_rel;
+	A=motor_pos_cmd;
+	A_fb=motor_pos_fb;
 	break;
-
-  case (1):   // 1 enable
-	islinked=0;			//TO GUI LED
-	isretracted=0 ;			//TO GUI LED
-	isprecharged=0;			//TO GUI LED
-	isenabled=1;			//TO GUI LED
-	Apos_fixed=Apos;
-	break;
-
-  case (2):   // 2 not linked
-	islinked=0;			//TO GUI LED
-	isretracted=0 ;			//TO GUI LED
-	isprecharged=0;			//TO GUI LED
-	isenabled=1;			//TO GUI LED
-	break;
-  case (3):   // 3 linked
+  case (1):   // 1 linked
 	islinked=1;			//TO GUI LED
 	isretracted=0 ;			//TO GUI LED
 	isprecharged=0;			//TO GUI LED
 	isenabled=1;			//TO GUI LED
 	Area_u=Altezza_layer*Nozzle;						//EXIT AREA [mm2]
 	AreaFilamento = (Diametro_Filamento*Diametro_Filamento*3.141)/(4); 	//FILAMENT SECTION [mm2]
+	//Vxy=sqrt(Vx*Vx+Vy*Vy)							//CARTESIAN VELOCITY [mm/S]
 	Va=(Vxy*Area_u)/(AreaFilamento);					//EXTRUSION VELOCITY [mm/s]
 	Acc_a=Acc_xy*Area_u/AreaFilamento;    					//EXTRUSION ACCELERATION [mm/s2] 
-	A=A+(Va*fperiod)+(K*Acc_a*fperiod*fperiod);				//CUMULATIVE EXTRUSION POSITION [mm] A
+	A_temp=A_temp+(Va*fperiod)+(K*Acc_a*fperiod*fperiod);			//CUMULATIVE EXTRUSION POSITION [mm] A+ offset G92 (Apos_rel)
 	A_debug=A_debug+Va*fperiod;						//DEBUG:CUMULATIVE EXTRUSION POSITION WITHOUT ACCELERATION COMPONENT [mm]
 	A1_debug=Va*fperiod;							//DEBUG: INSTANTANEUSLY EXTRUSION POSITION WITHOUT ACCELERATION COMPONENT [mm]
 	A2_debug=Va*fperiod+K*Acc_a*fperiod*fperiod;				//DEBUG: INSTANTANEUSLY EXTRUSION POSITION WITH ACCELERATION COMPONENT [mm]
+	A=A_temp;
+	A_fb=A+motor_pos_fb;
 	break;
-  case (4):   // 4 retraction
+	
+  case (2):   // 2 not linked
+	islinked=0;			//TO GUI LED
+	isretracted=0 ;			//TO GUI LED
+	isprecharged=0;			//TO GUI LED
+	isenabled=1;			//TO GUI LED
+	break;
+  
+  case (3):   // 3 retraction
 	islinked=0;			//TO GUI LED
 	isprecharged=0;			//TO GUI LED
 	isenabled=1;			//TO GUI LED
-	if (Apos>=Apos_fixed)		
-	    Apos_fixed=A=Apos;		//STORE THE POSITION BEFORE RETRACTION
-	if ( A > (Apos_fixed-retraction_mm) ){
+	if (Apos_rel>=Apos_fixed)		
+	    Apos_fixed=A=Apos_rel;		//STORE THE POSITION BEFORE RETRACTION
+	if ( A_temp > (Apos_fixed-retraction_mm) ){
 		Va=-Vretraction;	//SETS NEGATIVE VELOCITY UNITL THE RETRACTION LENGHT IS REACHED
 		isretracted=0;		//TO GUI LED
 		}
@@ -140,15 +135,17 @@ switch(status)
 		Va=0;			//SETS 0 VELOCITY WHEN THE RETRACTION LENGHT IS REACHED
 		isretracted=1;		//TO GUI LED
 	}
-	A=A+(Va*fperiod)+(K*Acc_a*fperiod*fperiod);				//CUMULATIVE EXTRUSION POSITION [mm] A
+	A_temp=A_temp+(Va*fperiod)+(K*Acc_a*fperiod*fperiod);				//CUMULATIVE EXTRUSION POSITION [mm] A
+	A=A_temp;
+	A_fb=A+motor_pos_fb;
 	break;
-  case (5):    // 5 precharge
+  case (4):    // 4 precharge
 	islinked=0;			//TO GUI LED
 	isretracted=0;			//TO GUI LED
 	isenabled=1;			//TO GUI LED
-	if (Apos<=Apos_fixed)
-	    Apos_fixed=A=Apos;		//STORE THE POSITION BEFORE PRECHARGE
-	if ( A < (Apos_fixed+precharge_mm ) ){
+	if (Apos_rel<=Apos_fixed)
+	    Apos_fixed=A=Apos_rel;		//STORE THE POSITION BEFORE PRECHARGE
+	if ( A_temp < (Apos_fixed+precharge_mm ) ){
 		Va=Vprecharge;		//SETS POSITIVE VELOCITY UNITL THE PRECHARGE LENGHT IS REACHED
 		isprecharged=0;		//TO GUI LED
 	}
@@ -156,7 +153,10 @@ switch(status)
 		Va=0;			//SETS 0 VELOCITY WHEN THE PRECHARGE LENGHT IS REACHED
 		isprecharged=1;		//TO GUI LED
 	}
-	A=A+(Va*fperiod)+(K*Acc_a*fperiod*fperiod);				//CUMULATIVE EXTRUSION POSITION [mm] A
+	A_temp=A_temp+(Va*fperiod)+(K*Acc_a*fperiod*fperiod);				//CUMULATIVE EXTRUSION POSITION [mm] A
+	A=A_temp;
+	A_fb=A+motor_pos_fb;
+
 	break;	
   
   
