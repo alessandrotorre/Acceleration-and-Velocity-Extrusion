@@ -36,11 +36,11 @@ pin in float Acc_xy;		//NOZZLE ACCELERATION IN THE CARTESIAN SPACE [mm/s2] FROM 
 pin in float Apos_rel;		//RELATIVE POSITION OF EXTRUDER A AXIS [mm] FROM halui.axis.3.pos-relative
 pin in float Apos_abs;		//ABSOLUTE POSITION OF EXTRUDER A AXIS [mm] FROM halui.axis.3.pos-commanded
 pin in float motor_pos_cmd;	//MANUAL COMMANDED POSITION OF EXTRUDER A AXIS [mm] FROM axis.3.motor-pos-cmd
-pin in float motor_pos_fb;	//DISPLAYED POSITION CONSIDERING OFFSET LIKE G92
+pin in float motor_pos_fb;	//FEEDBACK POSITION RECEIVED BY THE A MOTOR [mm] FROM axis.3.motor-pos-fb
 
 // A=[mm] is the position, Va=[mm/s] Acc_a=[mm2/s]
 pin out float A; 		//COMMANDED POSITION OF THE A AXIS CALCULATED BY THIS COMPONENT [mm]
-pin out float A_fb;
+pin out float A_fb;		//FEEDBACK POSITION OF THE A AXIS CALCULATED BY THIS COMPONENT [mm]
 pin out float Va;		//VELOCITY OF THE A AXIS CALCULATED BY THIS COMPONENT [mm/s]
 pin out float Acc_a;		//ACCELERATION OF THE A AXIS CALCULATED BY THIS COMPONENT [mm/s2]
 
