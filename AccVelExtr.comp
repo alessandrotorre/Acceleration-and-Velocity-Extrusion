@@ -111,7 +111,7 @@ switch(status)
 	A1_debug=Va*fperiod;							//DEBUG: INSTANTANEUSLY EXTRUSION POSITION WITHOUT ACCELERATION COMPONENT [mm]
 	A2_debug=Va*fperiod+K*Acc_a*fperiod*fperiod;				//DEBUG: INSTANTANEUSLY EXTRUSION POSITION WITH ACCELERATION COMPONENT [mm]
 	A=A_temp;
-	A_fb=A+motor_pos_fb;
+	A_fb=A;
 	break;
 	
   case (2):   // 2 not linked
@@ -137,7 +137,7 @@ switch(status)
 	}
 	A_temp=A_temp+(Va*fperiod)+(K*Acc_a*fperiod*fperiod);				//CUMULATIVE EXTRUSION POSITION [mm] A
 	A=A_temp;
-	A_fb=A+motor_pos_fb;
+	A_fb=A;
 	break;
   case (4):    // 4 precharge
 	islinked=0;			//TO GUI LED
@@ -155,7 +155,7 @@ switch(status)
 	}
 	A_temp=A_temp+(Va*fperiod)+(K*Acc_a*fperiod*fperiod);				//CUMULATIVE EXTRUSION POSITION [mm] A
 	A=A_temp;
-	A_fb=A+motor_pos_fb;
+	A_fb=A;
 
 	break;	
   
