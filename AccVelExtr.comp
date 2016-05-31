@@ -78,7 +78,7 @@ Altezza_layer_out=Altezza_layer;
 
 
 // LEGEND ABOUT THE "status" PIN FROM MCODE
-// 0 not enable
+// 0 not enabled
 // 1 linked
 // 2 not linked
 // 3 retraction
