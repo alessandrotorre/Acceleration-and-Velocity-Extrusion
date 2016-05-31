@@ -6,11 +6,11 @@
 
 #halcmd setp hal_pru_generic.pwmgen.00.out.01.value $1
 #Connette il nozzle alla posizione comandata della A
-halcmd setp VelocityExtrusion.0.status 3
+halcmd setp VelocityExtrusion.0.status 1
 
-halcmd unlinkp axis.3.motor-pos-cmd
-halcmd unlinkp VelocityExtrusion.0.A
-halcmd unlinkp hpg.stepgen.03.position-cmd
-halcmd net emcmot.03.pos-cmd VelocityExtrusion.0.A   hpg.stepgen.03.position-cmd
+#halcmd unlinkp axis.3.motor-pos-cmd
+#halcmd unlinkp VelocityExtrusion.0.A
+#halcmd unlinkp hpg.stepgen.03.position-cmd
+#halcmd net emcmot.03.pos-cmd VelocityExtrusion.0.A   hpg.stepgen.03.position-cmd
 
 exit 0
