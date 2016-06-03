@@ -60,8 +60,10 @@ pin out float A_debug;		// CUMULATIVE POSITION WITHOUT ACCELERATION COMPONENT
 pin out float A1_debug;		// INSTANTANEUSLY POSITION WITHOUT ACCELERATION COMPONENT
 pin out float A2_debug;		// INSTANTANEUSLY POSITION WITH ACCELERATION COMPONENT
 pin out float Area_u; 		// EXIT AREA AFTER EXTRUSION LAYER_HEIGHT*NOZZLE_DIAMETER [mm2]     
-pin out float A_temp;
-pin out float A_fb_temp;
+
+//VARIABLE
+variable float A_temp;		// INTERNAL VARIABLE: COMMANDED POSITION OF THE A AXIS CALCULATED BY THIS COMPONENT [mm]
+variable float A_fb_temp;	// INTERNAL VARIABLE: FEEDBACK POSITION OF THE A AXIS CALCULATED BY THIS COMPONENT [mm]
 
 
 pin in s32 status;
@@ -93,9 +95,9 @@ switch(status)
 	isretracted=0 ;			//TO GUI LED
 	isprecharged=0;			//TO GUI LED
 	isenabled=0;			//TO GUI LED
-	Apos_fixed=Apos_rel;
-	A_temp=motor_pos_cmd;
-	A_fb_temp=motor_pos_fb;
+	Apos_fixed=Apos_rel;		
+	A_temp=motor_pos_cmd;		//INTERNAL VARIABLE: COMMANDED POSITION OF THE A AXIS CALCULATED BY THIS COMPONENT [mm]
+	A_fb_temp=motor_pos_fb;		//INTERNAL VARIABLE: FEEDBACK POSITION OF THE A AXIS CALCULATED BY THIS COMPONENT [mm]
 	break;
   case (1):   // 1 linked
 	islinked=1;			//TO GUI LED
@@ -107,11 +109,11 @@ switch(status)
 	//Vxy=sqrt(Vx*Vx+Vy*Vy)							//CARTESIAN VELOCITY CALCULATED BY VELOCITY OF X AND VELOCITY OF Y[mm/S]
 	Va=(Vxy*Area_u)/(AreaFilamento);					//EXTRUSION VELOCITY [mm/s]
 	Acc_a=Acc_xy*Area_u/AreaFilamento;    					//EXTRUSION ACCELERATION [mm/s2] 
-	A_temp=A_temp+(Va*fperiod)+(K*Acc_a*fperiod*fperiod);			//CUMULATIVE EXTRUSION POSITION [mm] A+ offset G92 (Apos_rel)
+	A_temp=A_temp+(Va*fperiod)+(K*Acc_a*fperiod*fperiod);			//INTERNAL VARIABLE: COMMANDED POSITION OF THE A AXIS CALCULATED BY THIS COMPONENT [mm]
+	A_fb_temp=A_temp;							//INTERNAL VARIABLE: FEEDBACK POSITION OF THE A AXIS CALCULATED BY THIS COMPONENT [mm]
 	A_debug=A_debug+Va*fperiod;						//DEBUG:CUMULATIVE EXTRUSION POSITION WITHOUT ACCELERATION COMPONENT [mm]
 	A1_debug=Va*fperiod;							//DEBUG: INSTANTANEUSLY EXTRUSION POSITION WITHOUT ACCELERATION COMPONENT [mm]
 	A2_debug=Va*fperiod+K*Acc_a*fperiod*fperiod;				//DEBUG: INSTANTANEUSLY EXTRUSION POSITION WITH ACCELERATION COMPONENT [mm]
-	A_fb_temp=A_temp;
 	break;
 	
   case (2):   // 2 not linked
@@ -126,7 +128,7 @@ switch(status)
 	isprecharged=0;			//TO GUI LED
 	isenabled=1;			//TO GUI LED
 	if (Apos_rel>=Apos_fixed)		
-	    Apos_fixed=A=Apos_rel;		//STORE THE POSITION BEFORE RETRACTION
+	    Apos_fixed=A=Apos_rel;	//STORE THE RELATIVE POSITION ( THE ONE DISPLAYED ON YOUR GUI WITH G92 OFFSETTS) BEFORE RETRACTION
 	if ( A_temp > (Apos_fixed-retraction_mm) ){
 		Va=-Vretraction;	//SETS NEGATIVE VELOCITY UNITL THE RETRACTION LENGHT IS REACHED
 		isretracted=0;		//TO GUI LED
@@ -135,15 +137,15 @@ switch(status)
 		Va=0;			//SETS 0 VELOCITY WHEN THE RETRACTION LENGHT IS REACHED
 		isretracted=1;		//TO GUI LED
 	}
-	A_temp=A_temp+(Va*fperiod)+(K*Acc_a*fperiod*fperiod);				//CUMULATIVE EXTRUSION POSITION [mm] A
-	A_fb_temp=A_temp;
+	A_temp=A_temp+(Va*fperiod)+(K*Acc_a*fperiod*fperiod);		//CUMULATIVE EXTRUSION POSITION [mm] A
+	A_fb_temp=A_temp;						//INTERNAL VARIABLE: FEEDBACK POSITION OF THE A AXIS CALCULATED BY THIS COMPONENT [mm]
 	break;
   case (4):    // 4 precharge
 	islinked=0;			//TO GUI LED
 	isretracted=0;			//TO GUI LED
 	isenabled=1;			//TO GUI LED
 	if (Apos_rel<=Apos_fixed)
-	    Apos_fixed=A=Apos_rel;		//STORE THE POSITION BEFORE PRECHARGE
+	    Apos_fixed=A=Apos_rel;	//STORE THE RELATIVE POSITION ( THE ONE DISPLAYED ON YOUR GUI WITH G92 OFFSETTS) BEFORE PRECHARGE
 	if ( A_temp < (Apos_fixed+precharge_mm ) ){
 		Va=Vprecharge;		//SETS POSITIVE VELOCITY UNITL THE PRECHARGE LENGHT IS REACHED
 		isprecharged=0;		//TO GUI LED
@@ -152,12 +154,12 @@ switch(status)
 		Va=0;			//SETS 0 VELOCITY WHEN THE PRECHARGE LENGHT IS REACHED
 		isprecharged=1;		//TO GUI LED
 	}
-	A_temp=A_temp+(Va*fperiod)+(K*Acc_a*fperiod*fperiod);				//CUMULATIVE EXTRUSION POSITION [mm] A
-	A_fb_temp=A_temp;
+	A_temp=A_temp+(Va*fperiod)+(K*Acc_a*fperiod*fperiod);		//INTERNAL VARIABLE: COMMANDED POSITION OF THE A AXIS CALCULATED BY THIS COMPONENT [mm]
+	A_fb_temp=A_temp;						//INTERNAL VARIABLE: FEEDBACK POSITION OF THE A AXIS CALCULATED BY THIS COMPONENT [mm]
 	break;	
   
   
 }
-A=A_temp;
-A_fb=A_fb_temp;
+A=A_temp;		//ASSIGNMENT OF THE INTERNAL VARIABLE TO THE EXTERNAL PIN: COMMANDED POSITION OF THE A AXIS CALCULATED BY THIS COMPONENT [mm]
+A_fb=A_fb_temp;		//ASSIGNMENT OF THE INTERNAL VARIABLE TO THE EXTERNAL PIN: FEEDBACK POSITION OF THE A AXIS CALCULATED BY THIS COMPONENT [mm]
 }
