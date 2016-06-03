@@ -2,7 +2,7 @@
  *
  * Copyright (C) 2016 Alessandro Torre alessandro.torrebo@gmail.com
  *
- * This module checks the wich of the inputs is changed and take it as output
+ * This module checks wich of the inputs is changed and take it as output
  ******************************************************************************/
 component orLastVariation "" ;
 
