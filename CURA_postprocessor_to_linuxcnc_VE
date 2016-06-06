@@ -1,5 +1,5 @@
 #Name: Export to LinuxCNC Velocity Extrusion
-#Info: Modified GCode to export to Linux CNC Velocity Extrusion based 3D printer
+#Info: Adapted GCode to Acceleration and velocity Extrusion based 3D printer
 #Depend: GCode
 #Type: postprocess
 #Last modified Feburary 23, 2014
