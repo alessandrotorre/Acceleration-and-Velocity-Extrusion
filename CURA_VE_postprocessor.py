@@ -2,7 +2,8 @@
 #Info: Adapted GCode to Acceleration and velocity Extrusion based 3D printer
 #Depend: GCode
 #Type: postprocess
-#Last modified Feburary 23, 2014
+#Last modified Feburary 06/06, 2016
+#Author Alessandro Torre alessandro.torrebo@gmail.com
 import re
 
 
@@ -14,19 +15,17 @@ V_E_check=-1
 A_in_line = -1
 overextrude=overextrude_old=0
 
-#apro il file generato da CURA in lettura e memorizzo tutte le righe in r.readlines
 with open(filename, "r") as f:
 	lines = f.readlines()
 	lunghezza_r= len(lines)
 	print lunghezza_r
-#apro il file generato da CURA in scrittura
 with open(filename, "w") as w:
-	# w.write(';M120 Pn.nn,   n.nn=altezza layer [mm]\n')
-	# w.write(';M150 scollega il nozzle al movimento di X e Y\n')
-	# w.write(';M151 collega il nozzle al movimento di X e Y\n')
-	# w.write(';M130 attua il ritiro\n')
-	# w.write(';M131 attua il precharge\n')
-	# w.write(';M180 Pnn.nn setta il fattore K di estrusione in base all accelerazione di X e Y \n')
+	# w.write(';M120 Pn.nn,   n.nn=layer_height [mm]\n')
+	# w.write(';M150 unlink nozzle from XY\n')
+	# w.write(';M151 link nozzle to XY\n')
+	# w.write(';M130 retraction \n')
+	# w.write(';M131 precharge\n')
+	# w.write(';M180 Pnn.nn sets K extrusion acceleration factor related to X  Y accelerations \n')
 	# w.write('(AXIS,stop)\n')
 	# w.write('G64 P0.05 Q0.005\n')
 	# w.write ('M111\n')
@@ -76,7 +75,7 @@ with open(filename, "w") as w:
 						#print len(valori)
 						a = str(valori[i]) 
 						a = float(a[1:]) 
-						valori[i] = ''  #il valore di E viene cancellato
+						valori[i] = ''  #A value will be deleted
 						line = (" ".join(valori))+'\n'
 						if (a<a_old):
 							retraction=1
@@ -90,14 +89,14 @@ with open(filename, "w") as w:
 							a_old = a
 						elif ((a>a_old) and (retraction==1)):
 							retraction=0
-							w.write('M131\nM151\n')  # M131 attua il precharge ed M151 riattiva il collegamento del nozzle ad XY
+							w.write('M131\nM151\n')  # M131 sets precharge and M151 links the nozzle to XY vel
 							V_E_check=1
 							a_old=a
 						elif (a==a_old):
 							if (V_E_check==1):
 								w.write("M150\n")
 								V_E_check=0
-				if ( A_in_line != 1): # A non c'e' nella riga quindi l'estrusore deve essere scollegato
+				if ( A_in_line != 1): # if A is not in line, the A axis will be unlink from XY velocity 
 						if(V_E_check==1):
 							w.write("M150\n")
 							V_E_check=0
