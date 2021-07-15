@@ -8,7 +8,7 @@
 #!/bin/bash
 Altezza-layer=$1
 Nozzle=$2
-halcmd setp VelocityExtrusion.0.Altezza-layer $1
+halcmd setp AccVelExtr.0.Altezza-layer $1
 #if Nozzle >0
 #  halcmd setp VelocityExtruder.0.Nozzle Nozzle
 exit 0
