@@ -5,7 +5,7 @@
 # Turn off the extrusioin velocity control
 
 
-halcmd setp VelocityExtrusion.0.status 0
+halcmd setp AccVelExtr.0.status 0
 #halcmd unlinkp axis.3.motor-pos-cmd
 #halcmd unlinkp VelocityExtrusion.0.A
 #halcmd unlinkp hpg.stepgen.03.position-cmd
